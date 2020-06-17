@@ -1,29 +1,29 @@
 function Get-MsiProperty {
-	param(
-		[Parameter(Mandatory=$true)]
-		[string]$Path,
-		[Parameter(Mandatory=$true, ParameterSetName='Property')]
-		[string]$Property,
-		[Parameter(Mandatory=$true, ParameterSetName='ListProperties')]
-		[switch]$ListProperties
-	)
+  param(
+    [Parameter(Mandatory=$true)]
+    [string]$Path,
+    [Parameter(Mandatory=$true, ParameterSetName='Property')]
+    [string]$Property,
+    [Parameter(Mandatory=$true, ParameterSetName='ListProperties')]
+    [switch]$ListProperties
+  )
 
   function Get-AbsolutePath ($Path) {
     $Path = [System.IO.Path]::Combine( ((pwd).Path), ($Path) )
     return [System.IO.Path]::GetFullPath($Path)
   }
 
-	function Get-Property($Object, $PropertyName, [object[]]$ArgumentList) {
-		return $Object.GetType().InvokeMember($PropertyName, 'Public, Instance, GetProperty', $null, $Object, $ArgumentList)
-	}
-	 
-	function Invoke-Method($Object, $MethodName, $ArgumentList) {
-		return $Object.GetType().InvokeMember($MethodName, 'Public, Instance, InvokeMethod', $null, $Object, $ArgumentList)
-	}
+  function Get-Property($Object, $PropertyName, [object[]]$ArgumentList) {
+    return $Object.GetType().InvokeMember($PropertyName, 'Public, Instance, GetProperty', $null, $Object, $ArgumentList)
+  }
 
-	$ErrorActionPreference = 'Stop'
-	Set-StrictMode -Version Latest
-  
+  function Invoke-Method($Object, $MethodName, $ArgumentList) {
+    return $Object.GetType().InvokeMember($MethodName, 'Public, Instance, InvokeMethod', $null, $Object, $ArgumentList)
+  }
+
+  $ErrorActionPreference = 'Stop'
+  Set-StrictMode -Version Latest
+
   try {
     $msiOpenDatabaseModeReadOnly = 0
     $Installer = New-Object -ComObject WindowsInstaller.Installer
@@ -56,6 +56,6 @@ function Get-MsiProperty {
     Invoke-Method $View Close
     Remove-Variable -Name Record, View, Database, Installer
   }
-	
-	return $Return
+
+  return $Return
 }
